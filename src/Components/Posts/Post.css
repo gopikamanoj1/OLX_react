@@ -31,15 +31,23 @@
   overflow-y: hidden;
 }
 
+.cards::-webkit-scrollbar{
+  display: none;
+}
 .card {
-  margin-right: 15px;
-  padding: 13px;
-  max-width: 222px;
-  width: 222px;
+  padding-top: 10px;
   height: 270px;
   display: inline-block;
   cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 20px;
+  padding: 13px;
+  max-width: 222px;
+  width: 222px; 
+  
 }
+
 
 .card .favorite {
   display: flex;

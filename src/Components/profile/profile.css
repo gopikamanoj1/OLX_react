@@ -1,0 +1,15 @@
+.profiledivleft {
+  margin-top: 10%;
+  margin-left: 25%;
+  border:5px solid gray;
+  height: 500px;
+  max-width: 50%;
+  border-radius: 30px;   
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+}
+
+.divheading{
+padding-bottom: 100px ;
+}

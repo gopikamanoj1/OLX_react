@@ -1,58 +1,146 @@
-import React from 'react';
-
+import React  , {useContext, useState } from 'react';
 import Logo from '../../olx-logo.png';
 import './Signup.css';
+import {FirebaseContext} from '../../store/Context'
+import {useHistory} from 'react-router-dom'
+import { Link } from 'react-router-dom/cjs/react-router-dom.min';
+
+
+
+
 
 export default function Signup() {
+  const [error , setError] = useState("")
+  const history = useHistory()
+  const [userName , setUsername] = useState("")
+  const [email , setEmail] = useState("")
+  const [phone , setPhone] = useState("")
+  const [password , setPassword] = useState("")
+  const {firebase}=useContext(FirebaseContext)
+
+
+const handleSubmit = (e) =>{
+  e.preventDefault()
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^\d{10}$/;
+  const passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{6,}$/;
+
+
+  if(userName.trim()===""){
+    setError("please enter a valid username..")
+  }
+  else if(email.trim()===""){
+    setError("email cannot be empty")
+  }else if(!emailRegex.test(email)){
+    setError("please enter a valid email")
+  }
+  
+  else if(phone.trim()===""){
+  setError("phone shouldn't be empty..")
+  }else if(!phoneRegex.test(phone)){
+  setError("Please enter a valid 10-digit phone number.")
+  }
+  
+  else if(password.trim()===""){
+    setError("password shouldnt be empty.")
+  }else if(!passwordRegex.test(password)){
+    setError("Password should contain at least 6 characters, 1 numeric, and 1 special character.");
+  }
+
+  if (userName && email && emailRegex.test(email) && phone && phoneRegex.test(phone) && password && passwordRegex.test(password)){
+    setError("")
+    firebase.auth().createUserWithEmailAndPassword(email,password).then((result)=>{
+      result.user.updateProfile({displayName:userName}).then(()=>{
+        firebase.firestore().collection('users').add({
+          id:result.user.uid ,
+          username:userName,
+          phone:phone
+        }).then(()=>{
+          history.push('/login')
+        })
+      })
+    })
+  }
+  
+
+
+  
+}
+
+
   return (
     <div>
+     
       <div className="signupParentDiv">
-        <img width="200px" height="200px" src={Logo}></img>
-        <form>
-          <label htmlFor="fname">Username</label>
+       
+        <img width="200px" height="200px" src={Logo} alt='' className='imageolx'></img>
+        <h5 style={{color:"red"}} className='errortag'>{error}</h5>
+        <form onSubmit={handleSubmit}>
+
+
+          <label htmlFor="username">Username</label>
           <br />
           <input
             className="input"
             type="text"
-            id="fname"
+            id="username"
             name="name"
-            defaultValue="John"
+           value={userName}
+           onChange={(e)=>setUsername(e.target.value)}
           />
           <br />
-          <label htmlFor="fname">Email</label>
+
+
+
+          <label htmlFor="email">Email</label>
           <br />
           <input
             className="input"
             type="email"
             id="fname"
             name="email"
-            defaultValue="John"
+           value={email}
+           onChange={(e)=>setEmail(e.target.value)}
           />
           <br />
-          <label htmlFor="lname">Phone</label>
+
+
+
+
+          <label htmlFor="phone">Phone</label>
           <br />
           <input
             className="input"
             type="number"
-            id="lname"
+            id="phone"
             name="phone"
-            defaultValue="Doe"
+            value={phone}
+            onChange={(e)=>setPhone(e.target.value)}
           />
           <br />
-          <label htmlFor="lname">Password</label>
+
+
+
+
+          <label htmlFor="Password">Password</label>
           <br />
           <input
             className="input"
             type="password"
-            id="lname"
+            id="password"
             name="password"
-            defaultValue="Doe"
+           value={password}
+           onChange={(e)=>setPassword(e.target.value)}
           />
           <br />
           <br />
+
+
+
           <button>Signup</button>
         </form>
-        <a>Login</a>
+        <span><Link to="/login">Login</Link></span>
+        <span><Link to="/">Home</Link></span>
       </div>
     </div>
   );
